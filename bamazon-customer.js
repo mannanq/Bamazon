@@ -93,9 +93,29 @@ function decreaseStock() {
       item_name: itemArg
     }
   ]);
-  connection.end();
+  keepShopping();
 }
 
 function keepShopping() {
-  inquirer.prompt([]);
+  var choices = ['Keep Shopping!', 'Exit'];
+  inquirer
+    .prompt([
+      {
+        name: 'choice',
+        type: 'list',
+        message: 'What would you liked to do now?',
+        choices: choices
+      }
+    ])
+    .then(answers => {
+      switch (answers.choice) {
+        case 'Keep Shopping!':
+          showItems();
+          break;
+        case 'Exit':
+          console.log('Thanks for Shopping at Bamazon. GoodBye!\n');
+          connection.end();
+          break;
+      }
+    });
 }
