@@ -49,11 +49,31 @@ function showItems() {
         // console.log(answer.item);
         var itemSelected;
         itemSelected = answer.item;
-        console.log(
-          `Thank You for shopping at Bamazon. Your ${itemSelected} will be delivered ASAP!`
-        );
 
-        updateProduct(itemSelected);
+        // check whether item is in stock!
+
+        connection.query(
+          `SELECT stock FROM items WHERE item_name = "${itemSelected}"`,
+          (err, res) => {
+            if (err) throw err;
+
+            var stockLeft;
+            stockLeft = res[0].stock;
+
+            if (stockLeft > 0) {
+              console.log(
+                `Thank You for shopping at Bamazon. Your ${itemSelected} will be delivered to you ASAP!`
+              );
+              updateProduct(itemSelected);
+            } else {
+              console.log(
+                'Sorry, We are out of stock at the moment. Please check again later'
+              );
+              keepShopping();
+            }
+          }
+        );
+        // updateProduct(itemSelected);
       });
   });
 }
