@@ -1,6 +1,5 @@
 var inquirer = require('inquirer');
 var mysql = require('mysql');
-var cTable = require('console.table');
 
 // Pseudo Code - Customer:
 //  Show customers the stock of items you have from the database (think SELECT * !)
@@ -43,12 +42,18 @@ function showItems() {
           message:
             'Welcome to Bamazon! Please choose from the folowing items: ',
           choices: itemsAvailable
+        },
+        {
+          name: 'nums',
+          type: 'input',
+          message: 'How many units would you like to buy?'
         }
       ])
       .then(answer => {
         // console.log(answer.item);
-        var itemSelected;
+        var itemSelected, numUnits;
         itemSelected = answer.item;
+        numUnits = answer.nums;
 
         // check whether item is in stock!
 
@@ -60,11 +65,11 @@ function showItems() {
             var stockLeft;
             stockLeft = res[0].stock;
 
-            if (stockLeft > 0) {
+            if (stockLeft > numUnits) {
               console.log(
                 `Thank You for shopping at Bamazon. Your ${itemSelected} will be delivered to you ASAP!`
               );
-              updateProduct(itemSelected);
+              updateProduct(itemSelected, numUnits);
             } else {
               console.log(
                 'Sorry, We are out of stock at the moment. Please check again later'
@@ -79,8 +84,9 @@ function showItems() {
 }
 
 function updateProduct() {
-  var itemSelected;
+  var itemSelected, numUnits;
   itemSelected = arguments[0];
+  numUnits = arguments[1];
 
   var query1 = connection.query(
     'SELECT stock FROM items WHERE ?',
@@ -92,9 +98,9 @@ function updateProduct() {
     (err, res) => {
       var inStock;
       inStock = res[0].stock;
-      //console.log(inStock);
+      console.log(inStock);
 
-      decreaseStock(itemSelected, inStock);
+      decreaseStock(itemSelected, inStock, numUnits);
     }
   );
 }
@@ -102,12 +108,14 @@ function updateProduct() {
 function decreaseStock() {
   var itemArg = arguments[0];
   var stockArg = arguments[1];
+  var numUnits = arguments[2];
   console.log(itemArg);
   console.log(stockArg);
+  console.log(numUnits);
 
   var query = connection.query('UPDATE items SET ? WHERE ?', [
     {
-      stock: stockArg - 1
+      stock: stockArg - numUnits
     },
     {
       item_name: itemArg
