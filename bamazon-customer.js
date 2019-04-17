@@ -98,7 +98,6 @@ function updateProduct() {
     (err, res) => {
       var inStock;
       inStock = res[0].stock;
-      console.log(inStock);
 
       decreaseStock(itemSelected, inStock, numUnits);
     }
@@ -109,9 +108,6 @@ function decreaseStock() {
   var itemArg = arguments[0];
   var stockArg = arguments[1];
   var numUnits = arguments[2];
-  console.log(itemArg);
-  console.log(stockArg);
-  console.log(numUnits);
 
   var query = connection.query('UPDATE items SET ? WHERE ?', [
     {
